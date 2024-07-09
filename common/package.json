@@ -1,7 +1,11 @@
 {
   "name": "@porufantasy/yahoofantasy",
-  "version": "1.0.1",
-  "main": "index.js",
+  "version": "1.0.2",
+  "main": "./build/index.js",
+  "types": "./build/index.ts",
+  "files": [
+    "build/**/*"
+  ],
   "scripts": {
     "start": "ts-node-dev src/index.ts",
     "clean": "del ./build/*",
