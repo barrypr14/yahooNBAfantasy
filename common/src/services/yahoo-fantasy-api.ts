@@ -27,6 +27,7 @@ const errorStatusHandling = (error: unknown) => {
             throw new NotAuthorizationError();
         else if(statusCode === "400")
             throw new BadRequestError("Please input correct url");
+        console.error(error);
     } else {
         console.error(error);
     }
