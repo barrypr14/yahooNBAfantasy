@@ -1,0 +1,15 @@
+export interface Stats {
+    FGM: number,
+    FGA: number,
+    FG: number,
+    FTM: number,
+    FTA: number,
+    FT: number,
+    ThreePTM: number,
+    PTS: number,
+    REB: number,
+    AST: number,
+    STL: number,
+    BLK: number,
+    TO: number,
+}
