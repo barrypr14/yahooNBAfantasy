@@ -1,2 +1,6 @@
 # Node.js dependecies 
 node_modules/
+.env
+
+common/src/test.ts
+common/build/

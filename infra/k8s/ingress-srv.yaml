@@ -10,7 +10,7 @@ spec:
     - host: fantasy.dev
       http:
         paths:
-          - path: /api/users
+          - path: /api/users/?(.*)
             pathType: Prefix
             backend:
               service:
