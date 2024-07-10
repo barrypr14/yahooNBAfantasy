@@ -9,7 +9,7 @@ export class RequestValidationError extends CustomError {
     constructor(public errors: ValidationError[]){
         super("Invalid request parameters");
 
-        Object.setPrototypeOf(this, RequestValidationError);
+        Object.setPrototypeOf(this, RequestValidationError.prototype);
     }
 
     serializeErrors() {
