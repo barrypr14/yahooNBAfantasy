@@ -295,7 +295,9 @@ export class FantasyService {
 export class OauthService {
     private static endpoint = "https://api.login.yahoo.com/oauth2/get_token";
 
-    static initialAuthorization = async (code: string, client_id: string, client_key: string) => {
+    static initialAuthorization = async (code: string, client_id: string, client_key: string) : Promise<{
+        access_token: string, refresh_token: string, expires_in: string, token_type: string
+    }> => {
         const AUTH_HEADER = Buffer.from(`${client_id}:${client_key}`).toString('base64');
         
         const response = await axios({
@@ -314,11 +316,10 @@ export class OauthService {
             })
         });
 
-        console.log(response);
         if(!response)
             throw new BadRequestError("Can't get the access token");
 
-        return response.data.access_token;
+        return response.data;
     }
 
     static refreshAuthorization = async (refresh_token: string, client_id: string, client_key: string) => {
@@ -338,8 +339,7 @@ export class OauthService {
                 }
             });
 
-            console.log(response.data)
-            return response.data.access_token;
+            return response.data;
         } catch {
 
         }
