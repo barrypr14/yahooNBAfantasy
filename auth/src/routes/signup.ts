@@ -29,7 +29,7 @@ router.post("/api/users/signup", [
         id: user.id,
         email: user.email,
         access_token: access_token,
-        expired_time: refresh_token
+        refresh_token: refresh_token
     }, process.env.JWT_KEY!);
 
     req.session = {

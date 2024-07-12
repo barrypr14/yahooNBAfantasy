@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import jwt  from 'jsonwebtoken';
 import express, { Request, Response} from "express";
 import { body } from "express-validator";
 
@@ -19,6 +19,17 @@ router.post('/api/users/signin', [
         throw new BadRequestError("Please use valid email or password");
     }
 
+    // Encode with JsonWebToken
+    const userJWT = jwt.sign({
+        id: user.id,
+        email: user.email,
+        access_token: user.accessToken,
+        refresh_token: user.refreshToken 
+    }, process.env.JWT_KEY!);
+
+    req.session = {
+        jwt: userJWT
+    };
     res.send(user);
 })
 
