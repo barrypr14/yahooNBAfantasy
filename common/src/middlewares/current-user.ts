@@ -5,7 +5,7 @@ export interface UserPayload {
     id: string,
     email: string,
     access_token: string,
-    expired_time: number
+    refresh_token: number
 };
 
 declare global {
