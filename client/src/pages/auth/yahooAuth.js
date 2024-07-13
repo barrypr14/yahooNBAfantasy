@@ -7,9 +7,9 @@ export default () => {
     const router = useRouter();
 
     const { doRequest, errors } = useRequest({
-        url: '/api/users/authtoyahoo',
+        url: '/api/users/back-to-signup',
         method: 'post',
-        onSuccess: () => Router.push('/')
+        onSuccess: () => Router.push('/league/monitor')
     });
 
     useEffect(() => {
@@ -18,7 +18,7 @@ export default () => {
             const { code } = router.query;
             console.log("in the browser can see the code is", code);
             if(code){
-                await doRequest({code});
+                await doRequest({code: code});
             }
         }
         completeSignup();

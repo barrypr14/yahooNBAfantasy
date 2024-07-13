@@ -16,9 +16,9 @@ export default () => {
         },
         onSuccess: () => {
             try{
-                // const yahooAuthUrl = `https://api.login.yahoo.com/oauth2/request_auth?client_id=${client_id}&redirect_uri=https://fantasy.dev/auth/yahooAuth&response_type=code&language=en-us`;
-                // window.location.href = yahooAuthUrl;   
-                Router.push('/');            
+                const yahooAuthUrl = `https://api.login.yahoo.com/oauth2/request_auth?client_id=${client_id}&redirect_uri=https://fantasy.dev/auth/yahooAuth&response_type=code&language=en-us`;
+                window.location.href = yahooAuthUrl;   
+                // Router.push('/');            
             } catch {
                 Router.push('/auth/signup');
             }

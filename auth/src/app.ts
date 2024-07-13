@@ -9,6 +9,7 @@ import { errorHandler } from '@porufantasy/yahoofantasy';
 import { signinRouter } from './routes/signin';
 import { signoutRouter } from './routes/signout';
 import cookieSession from 'cookie-session';
+import { backToSignupRouter } from './routes/back-to-signup';
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.use(currentUserRouter);
 app.use(signUpRouter);
 app.use(signinRouter);
 app.use(signoutRouter);
+app.use(backToSignupRouter);
 
 app.use(errorHandler);
 export { app };
