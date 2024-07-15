@@ -16,6 +16,14 @@ build:
         manual:
           - src: 'src/**/*.ts'
             dest: .
+    - image: barrypr14/yahoo-nba-fantasy-league
+      context: league
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.ts'
+            dest: .
     - image: barrypr14/yahoo-nba-fantasy-client
       context: client
       docker:
