@@ -1,28 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
-metadata: 
-  name: league-depl
+metadata:
+  name: rabbitmq
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: league
+      app: rabbitmq
   template:
-    metadata: 
+    metadata:
       labels:
-        app: league
+        app: rabbitmq
     spec:
       containers:
-        - name: league
-          image: barrypr14/yahoo-nba-fantasy-league
-          env: 
-            - name: MONGO_URI
-              value: 'mongodb://league-mongo-srv:27017/league'
-            - name: JWT_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: jwt-secret
-                  key: JWT_KEY
+        - name: rabbitmq
+          image: rabbitmq:management  # RabbitMQ Docker image with management plugin
+          ports:
+            - containerPort: 5672  # RabbitMQ default port
+            - containerPort: 15672  # RabbitMQ management console port
+          env:
             - name: RABBITMQ_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -33,16 +29,22 @@ spec:
                 secretKeyRef:
                   name: rabbitmq-password
                   key: PASSWORD
+
+---
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: league-srv
+  name: rabbitmq-srv
 spec:
   selector:
-    app: league
+    app: rabbitmq
   ports:
-    - name: league
+    - name: amqp
       protocol: TCP
-      port: 3000
-      targetPort: 3000
+      port: 5672
+      targetPort: 5672
+    - name: management
+      protocol: TCP
+      port: 15672
+      targetPort: 15672

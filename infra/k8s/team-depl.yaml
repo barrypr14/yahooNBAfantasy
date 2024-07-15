@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata: 
-  name: league-depl
+  name: team-depl
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: league
+      app: team
   template:
     metadata: 
       labels:
-        app: league
+        app: team
     spec:
       containers:
-        - name: league
-          image: barrypr14/yahoo-nba-fantasy-league
+        - name: team
+          image: barrypr14/yahoo-nba-fantasy-team
           env: 
             - name: MONGO_URI
-              value: 'mongodb://league-mongo-srv:27017/league'
+              value: 'mongodb://team-mongo-srv:27017/team'
             - name: JWT_KEY
               valueFrom:
                 secretKeyRef:
@@ -37,12 +37,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: league-srv
+  name: team-srv
 spec:
   selector:
-    app: league
+    app: team
   ports:
-    - name: league
+    - name: team
       protocol: TCP
       port: 3000
       targetPort: 3000
