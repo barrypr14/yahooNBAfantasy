@@ -24,6 +24,13 @@ spec:
                 name: league-srv
                 port:
                   number: 3000
+          - path: /api/team/?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: team-srv
+                port:
+                  number: 3000
           - path: /?(.*)
             pathType: Prefix
             backend:

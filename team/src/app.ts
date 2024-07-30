@@ -4,6 +4,7 @@ import { json } from 'body-parser';
 import cookieSession from 'cookie-session';
 
 import { NotFoundError, errorHandler } from '@porufantasy/yahoofantasy';
+
 const app = express();
 app.set('trust proxy', true);
 app.use(json());

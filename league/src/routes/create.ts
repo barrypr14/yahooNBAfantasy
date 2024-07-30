@@ -1,9 +1,14 @@
 import { BadRequestError, FantasyService, NotAuthorizationError, Scoreboard, currentUser } from '@porufantasy/yahoofantasy';
 import express, { Request, Response} from 'express';
+
 import { League } from '../models/league.model';
+import { publishLeageCreateEvent } from '../utils/rabbitmq';
 
 const router = express.Router();
 
+// In this route, it needs league_name, how many and what teams in this league. 
+// In addition, the current scoreboard in each team are also necessary.
+// After create the league data, it should send an event to rabbitmq
 router.post('/api/league/create', currentUser, async (req: Request, res: Response) => {
     const { league_prefix, league_id } = req.body;
     
@@ -58,7 +63,7 @@ router.post('/api/league/create', currentUser, async (req: Request, res: Respons
 
     await league.save();
 
-    
+    await publishLeageCreateEvent("league_create", league_id); // tell the team service to update league_id league data
     res.send(league);
 })
 

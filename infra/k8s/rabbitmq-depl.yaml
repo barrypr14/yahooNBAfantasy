@@ -19,18 +19,17 @@ spec:
             - containerPort: 5672  # RabbitMQ default port
             - containerPort: 15672  # RabbitMQ management console port
           env:
-            - name: RABBITMQ_USERNAME
+            - name: RABBITMQ_DEFAULT_USER
               valueFrom:
                 secretKeyRef:
                   name: rabbitmq-username
                   key: USERNAME
-            - name: RABBITMQ_PASSWORD
+            - name: RABBITMQ_DEFAULT_PASS
               valueFrom:
                 secretKeyRef:
                   name: rabbitmq-password
                   key: PASSWORD
 
----
 ---
 apiVersion: v1
 kind: Service
