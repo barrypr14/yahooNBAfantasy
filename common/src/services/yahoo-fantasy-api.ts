@@ -1,7 +1,9 @@
+import { Element } from './../../node_modules/parse5/dist/cjs/tree-adapters/default.d';
 import axios, { all } from 'axios';
 import util from 'util';
 import { parseString } from 'xml2js'
 import qs from 'qs';
+import * as cheerio  from 'cheerio';
 
 import { BadRequestError } from '../errors/bad-request-error';
 import { Stats } from '../dataTypes/stats';
@@ -61,8 +63,8 @@ export class FantasyService {
         }
     }
 
-    // Get all the scoreboard of the manager in the league for League Service
-    static getManagerWeekScoreboard = async(access_token: string, league_prefix: string, league_id: string, week: string) => {
+    // Get all the scoreboard stats of the manager in the league for League Service and also Team Service
+    static getManagerWeekScoreboard = async(access_token: string, league_prefix: string, league_id: string, week: string) : Promise<{[manager: string] : Stats}>=> {
         try{
             const response = await this.makeApiRequest(`league/${league_prefix}.l.${league_id}/scoreboard;type=week;week=${week}`, access_token);
 
@@ -98,11 +100,12 @@ export class FantasyService {
             return statsData;
         } catch (error) {
             console.error(error);
+            return {};
         }
     }
 
     // Get all the win-loss-tie score of each manager in the league for League Service
-    static getManagerWeekScoreResult = async(access_token: string, league_prefix: string, league_id: string, week: string) : Promise<{ [manager: string]: { win: number; loss: number; tie: number; opp: string; }} | undefined>=> {
+    static getManagerWeekScoreResult = async(access_token: string, league_prefix: string, league_id: string, week: string) : Promise<{ [manager: string]: { win: number; loss: number; tie: number; opp: string; }}>=> {
         try{
             const response = await this.makeApiRequest(`league/${league_prefix}.l.${league_id}/scoreboard;type=week;week=${week}`, access_token);
 
@@ -132,11 +135,12 @@ export class FantasyService {
             return oppData;
         } catch (error){
             console.error(error);
+            return {};
         }
     }
 
     // Get all the meta in the league, currently only have team name for Team service or League Service
-    static getLeagueMeta = async(access_token: string, league_prefix: string, league_id: string) => {
+    static getLeagueMeta = async(access_token: string, league_prefix: string, league_id: string) : Promise<{ league_name: string, teams_name: {[id: string]: string}, league_week: number}> => {
         try{
             const response = await this.makeApiRequest(`league/${league_prefix}.l.${league_id}/teams`, access_token);
             const league_name = response.fantasy_content.league[0].name[0];
@@ -154,11 +158,12 @@ export class FantasyService {
             return league_meta;
         } catch(error){
             console.error(error);
+            return {league_name: "", teams_name: {}, league_week: 0};
         }
     }
 
     // Get all the player id in specific team for Team Service
-    static getTeamRoster = async(access_token: string, league_prefix: string, league_id: string, team_id: string) => {
+    static getTeamRoster = async(access_token: string, league_prefix: string, league_id: string, team_id: string) : Promise<String[]> => {
         try{
             const response = await this.makeApiRequest(`team/${league_prefix}.l.${league_id}.t.${team_id}/roster/players`, access_token);
             
@@ -166,17 +171,18 @@ export class FantasyService {
             const rosterList = [];
 
             for(const data of rosterData){
-                rosterList.push(data.player_id[0]);
+                rosterList.push(String(data.player_id[0]));
             }
 
             return rosterList ;
         } catch (error){
             console.error(error);
+            return [];
         }
     }
 
     // Get all the player stats which are in the specific team for Team Service
-    static getTeamRosterStats = async(access_token: string, league_prefix: string, league_id: string, team_id: string) => {
+    static getTeamRosterStats = async(access_token: string, league_prefix: string, league_id: string, team_id: string) : Promise<{[player_id: string] : { name: string, stat : Stats}}> => {
         try{
             const roster = await this.getTeamRoster(access_token, league_prefix, league_id, team_id);
             let url = `league/${league_prefix}.l.${league_id}/players;`;
@@ -214,9 +220,10 @@ export class FantasyService {
                     }
                 }
             }
-            return playerStatData;
+            return rosterStats;
         } catch (error){
-
+            errorStatusHandling(error);
+            return {};
         }
     }
 
@@ -243,7 +250,7 @@ export class FantasyService {
 
             return player_stat;
         } catch(error){
-            console.error(error);
+            errorStatusHandling(error);
         }
     }
 
@@ -343,5 +350,81 @@ export class OauthService {
         } catch {
 
         }
+    }
+}
+
+const monthslist = ["january", "feburary", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
+const monthToNum : {[month : string] : number }= {"Jan" : 1, "Feb": 2, "Mar": 3, "Apr": 4, "Oct": 10, "Nov": 11, "Dec": 12};
+
+// All the date time will convert into UTC time. The game date usually from UTC time monday 12:00 p.m. to next monday 12:00 p.m.
+export const getTeamThisWeekSchedule = async () : Promise<{[team_name: string] : number}>=> {
+    // Initialize current date and the first/end date of this week
+    const cur_date = new Date('2024-03-29 12:00:00 +0000'); // current UTC time 
+    const d = new Date('2024-03-29 12:00:00 +0000'); 
+    
+    const first = d.getDate() - d.getDay() + 1 // Monday
+    const last = first + 7 // Next Monday
+    const lastDate = new Date(d.setDate(last));
+    
+    let year : string = "", month : string = "";
+    let m = cur_date.getMonth() + 1;
+    // Determine the month in this week
+    if(m === 7 || m === 8 || m === 9)
+        return {};
+    else{
+        month = monthslist[m-1];
+        year = cur_date.getFullYear().toString();
+    }
+
+    const url = `https://www.basketball-reference.com/leagues/NBA_${year}_games-${month}.html#schedule`;
+    const numOfgames_nbaTeams : {[team_name: string] : number} = {};
+    console.log("the cur date in this week: ", cur_date);
+    console.log("the last date in this week: ", lastDate);
+    await getSchedule(numOfgames_nbaTeams, url, cur_date, lastDate);
+    if(cur_date.getMonth() !== lastDate.getMonth()){ // If the week is across two months, fetch next month schedule
+        if(lastDate.getMonth() !== 11){
+            const next_url = `https://www.basketball-reference.com/leagues/NBA_${year}_games-${monthslist[m]}.html#schedule`;
+            await getSchedule(numOfgames_nbaTeams, next_url, cur_date, lastDate);
+        } else {
+            const next_url = `https://www.basketball-reference.com/leagues/NBA_${year}_games-${monthslist[0]}.html#schedule`;
+            await getSchedule(numOfgames_nbaTeams, next_url, cur_date, lastDate);
+        }
+    }
+
+    return numOfgames_nbaTeams;
+}
+
+// Use cheerio to fetch the nba team schedule from basketball reference
+const getSchedule = async (numOfgames_nbaTeams: {[team_name: string] : number}, url: string, firstDate: Date, lastDate: Date) => {
+    try{
+        await axios.get(url).then((html: any) => {
+            // get each row in the schedule table
+            const $ = cheerio.load(html.data);
+            const rows = $('#schedule tr');
+    
+            rows.each((index: any, element: any) => {
+                if(index > 0){
+                    const game_date_array = $(element).find('[data-stat=date_game]').text().split(' ');
+                    const game_time_array = $(element).find('[data-stat=game_start_time]').text().replace('p','').split(':');
+                    
+                    const game_month : number = monthToNum[game_date_array[1]];
+                    const game_year : number = Number(game_date_array[3]);
+                    const game_day : number = Number(game_date_array[2].replace(',', ''));
+                    const  game_time = String(Number(game_time_array[0]) + 12) + ':' + game_time_array[1] + ':00';
+
+                    const game_date_type = `${game_year}-${game_month}-${game_day} ${game_time} -0400`;
+                    const game_date = new Date(game_date_type);
+                    
+                    if(game_date > firstDate && game_date <= lastDate){
+                        const home_team = $(element).find('[data-stat=home_team_name]').text();
+                        const visitor_team = $(element).find('[data-stat=visitor_team_name]').text();
+                        numOfgames_nbaTeams[home_team] ? numOfgames_nbaTeams[home_team] += 1 : numOfgames_nbaTeams[home_team] = 1;
+                        numOfgames_nbaTeams[visitor_team] ? numOfgames_nbaTeams[visitor_team] += 1 : numOfgames_nbaTeams[visitor_team] = 1;
+                    }
+                }
+            });
+        });
+    } catch (error){
+        console.error(error);
     }
 }
