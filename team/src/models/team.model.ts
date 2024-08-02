@@ -7,11 +7,11 @@ interface TeamAttr {
     league_prefix: string,
     team_id: string,
     team_name: string,
-    roster: {[player_id : string] : Stats},
+    roster: {[player_id : string] : {name: string, stat: Stats}},
     predict_scoreboard: Scoreboard,
     initial_predict_scoreboard: Scoreboard,
     league_week: number,
-    last_updated: number
+    last_updated: Date
 }
 
 interface TeamDoc extends Document {
@@ -19,11 +19,11 @@ interface TeamDoc extends Document {
     league_prefix: string,
     team_id: string,
     team_name: string,
-    roster: Map<string, Stats>,
+    roster: Map<string, {name: string, stat: Stats}>,
     predict_scoreboard: Scoreboard,
     initial_predict_scoreboard: Scoreboard,
     league_week: string,
-    last_updated: number
+    last_updated: Date
 }
 
 interface TeamModel extends Model<TeamDoc>{
@@ -36,24 +36,27 @@ const TeamSchema: Schema<TeamDoc> = new Schema({
     team_id: { type: String, required: true},
     team_name: { type: String, required: true},
     roster: { type: Map, of: new Schema({
-        FGM: Number,
-        FGA: Number,
-        FG: Number,
-        FTM: Number,
-        FTA: Number,
-        FT: Number,
-        ThreePTM: Number,
-        PTS: Number,
-        REB: Number,
-        AST: Number,
-        STL: Number,
-        BLK: Number,
-        TO: Number
+        name: String,
+        stat : {
+            FGM: Number,
+            FGA: Number,
+            FG: Number,
+            FTM: Number,
+            FTA: Number,
+            FT: Number,
+            ThreePTM: Number,
+            PTS: Number,
+            REB: Number,
+            AST: Number,
+            STL: Number,
+            BLK: Number,
+            TO: Number
+        }
     }), required: true},
     predict_scoreboard: { type: Map, required: true },
     initial_predict_scoreboard: { type: Map, required: true},
     league_week: { type: String, required: true},
-    last_updated: { type: Number, required: true}
+    last_updated: { type: Date, required: true}
 }, {
     toJSON: {
         transform(doc, ret) {

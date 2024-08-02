@@ -1,5 +1,6 @@
 // rabbitmq.ts
 import amqp, { Connection } from 'amqplib';
+import { updateDB } from './updateDB';
 
 let connection: Connection | null = null;
 
@@ -32,9 +33,14 @@ const rabbitmqListener = async () => {
 
     await channel.bindQueue(q.queue, exchange, '');
 
-    channel.consume(q.queue, (msg) => {
+    channel.consume(q.queue, async (msg) => {
         if(msg && msg.content){
-            console.log("in listener: ", msg.content.toString());
+            const data = msg.content.toString();
+            console.log("in listener: ", data);
+
+            // Convert into JSON and update the Team Datebase
+            const event = JSON.parse(data);
+            await updateDB(event.access_token, event.league_prefix, event.league_id);
 
             channel.ack(msg);
         }

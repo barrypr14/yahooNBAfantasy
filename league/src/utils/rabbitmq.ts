@@ -15,7 +15,7 @@ const connectRabbitMQ = async () => {
   }
 };
 
-const publishLeageCreateEvent = async (exchange: string, msg: string) => {
+const publishLeageCreateEvent = async (exchange: string, msg: {access_token: string, league_prefix: string, league_id: string[]}) => {
   try{
     if (!connection) {
       throw new Error('RabbitMQ connection is not established');
@@ -55,6 +55,7 @@ const rabbitmqListener = async () => {
           channel.ack(msg);
       }
   })
+  console.log("finish");
 }
 
 export { connectRabbitMQ, publishLeageCreateEvent, rabbitmqListener };

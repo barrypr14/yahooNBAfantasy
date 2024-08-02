@@ -1,17 +1,9 @@
-import { BadRequestError, FantasyService, NotAuthorizationError } from '@porufantasy/yahoofantasy';
-import express, { Request, Response} from 'express';
+import { BadRequestError, FantasyService } from '@porufantasy/yahoofantasy';
 import { Team } from '../models/team.model';
 
-const router = express.Router();
-
-router.post('/api/team/update', async (req: Request, res: Response) => {
-    const { league_id, league_prefix } = req.body;
-
-    if(!req.currentUser){
-        throw new NotAuthorizationError();
-    }   
-
-    const access_token = req.currentUser.access_token;
+const updateDB =  async (access_token: string, league_prefix: string, league_ids: string[]) => {
+    const league_id = league_ids[0];
+    console.log("In updateDB, ", league_id);
     // Get all team id in specific league
     const league_meta = await FantasyService.getLeagueMeta(access_token, league_prefix, league_id);
     if(!league_meta){
@@ -47,8 +39,9 @@ router.post('/api/team/update', async (req: Request, res: Response) => {
             league_week: Number(week),
             last_updated: new Date(),
         });
+        console.log(team);
         await team.save();
     }
+}
 
-    res.send({});
-})
+export { updateDB }

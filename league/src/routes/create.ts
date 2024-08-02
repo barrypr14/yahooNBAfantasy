@@ -63,7 +63,7 @@ router.post('/api/league/create', currentUser, async (req: Request, res: Respons
 
     await league.save();
 
-    await publishLeageCreateEvent("league_create", league_id); // tell the team service to update league_id league data
+    await publishLeageCreateEvent("league_create", {access_token: access_token, league_prefix: league_prefix, league_id: [league_id]}); // tell the team service to update league_id league data
     res.send(league);
 })
 
