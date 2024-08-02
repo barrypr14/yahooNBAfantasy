@@ -58,7 +58,7 @@ router.post('/api/league/create', currentUser, async (req: Request, res: Respons
         current_scoreboard: leauge_team_scoreboard,
         league_week: current_week,
         teamName_ref: league_meta.teams_name,
-        last_updated: Date.now()
+        last_updated: new Date()
     })
 
     await league.save();

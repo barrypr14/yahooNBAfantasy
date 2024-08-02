@@ -11,7 +11,7 @@ interface LeagueAttr {
     current_scoreboard: {[team_id: string] : Scoreboard},
     league_week: string,
     teamName_ref: {[team_id: string] : string},
-    last_updated: number
+    last_updated: Date
 }
 
 interface LeagueDoc extends Document {
@@ -22,7 +22,7 @@ interface LeagueDoc extends Document {
     current_scoreboard: Map<string, Scoreboard>,
     league_week: string,
     teamName_ref: Map<string, string>,
-    last_updated: number
+    last_updated: Date
 }
 
 // Define the League Model
@@ -59,7 +59,7 @@ const LeagueSchema: Schema<LeagueDoc> = new Schema({
     }) , required: true},
     league_week: { type: String, required: true},
     teamName_ref: { type: Map, of: String, required: true},
-    last_updated: { type: Number, required: true}
+    last_updated: { type: Date, required: true}
 }, {
     toJSON: {
         transform(doc, ret) {

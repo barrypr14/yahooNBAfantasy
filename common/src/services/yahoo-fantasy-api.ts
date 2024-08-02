@@ -1,4 +1,3 @@
-import { Element } from './../../node_modules/parse5/dist/cjs/tree-adapters/default.d';
 import axios, { all } from 'axios';
 import util from 'util';
 import { parseString } from 'xml2js'
