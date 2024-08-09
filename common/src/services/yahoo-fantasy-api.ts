@@ -204,6 +204,7 @@ export class FantasyService {
                 const playerResponse = await this.makeApiRequest(player_url, access_token);
                 const game_played = parseInt(playerResponse.fantasy_content.players[0].player[0].player_stats[0].stats[0].stat[0].value[0]) | 0 + parseInt(playerResponse.fantasy_content.players[0].player[0].player_stats[0].stats[0].stat[1].value[0]) | 0;
 
+                
                 rosterStats[data.player_id[0]] = {
                     name: data.name[0].full[0],
                     stat: {
@@ -229,7 +230,7 @@ export class FantasyService {
             return {};
         }
     }
-    
+
     // Get a player stats for Player Service
     static getPlayerStats = async(access_token: string, league_prefix: string, league_id: string, player_id: string, type: string = "") => {
         try{
