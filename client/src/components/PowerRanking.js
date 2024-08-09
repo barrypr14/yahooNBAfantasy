@@ -1,4 +1,6 @@
-export default (  { power_ranking } ) => {
+import Link from "next/link";
+
+export default (  { power_ranking, league_id } ) => {
 
     const ranking = ( 
             <table>
@@ -11,9 +13,9 @@ export default (  { power_ranking } ) => {
                 <tbody>
                     {
                         power_ranking.map((team) => (
-                            <tr id={team.id}>
-                                <td>{team.team_name}</td>
-                                <td>{team.win}-{team.loss}-{team.tie}</td>
+                            <tr id={team.team_id}>
+                                <td><Link href={`/team/simulator?league_id=${league_id}&team_id=${team.team_id}&team_name=${team.team_name}`}>{team.team_name}</Link></td>
+                                <td>{team.win} - {team.loss} - {team.tie}</td>
                             </tr>
                         ))
                     }

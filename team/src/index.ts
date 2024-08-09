@@ -12,14 +12,14 @@ const start = async () => {
 
     try{
         await mongoose.connect(process.env.MONGO_URI);    
-        console.log("Team Service connected to MongoDb");   
+        console.log("Team Service connected to MongoDb!!");   
     } catch(err){
         console.log(err);
     }
 
     try{
         await connectRabbitMQ();
-        console.log("Team Service connected to RabbitMQ");
+        console.log("Team Service connected to RabbitMQ??");
     } catch(err){
         console.log(err);
     }

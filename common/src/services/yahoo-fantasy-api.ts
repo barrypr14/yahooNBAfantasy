@@ -200,22 +200,26 @@ export class FantasyService {
             const rosterStats : {[player_id: string] : { name: string, stat : Stats}} = {};
 
             for(const data of playerStatData){
+                const player_url = `players;player_keys=${league_prefix}.p.${data.player_id[0]}/stats`
+                const playerResponse = await this.makeApiRequest(player_url, access_token);
+                const game_played = parseInt(playerResponse.fantasy_content.players[0].player[0].player_stats[0].stats[0].stat[0].value[0]) | 0 + parseInt(playerResponse.fantasy_content.players[0].player[0].player_stats[0].stats[0].stat[1].value[0]) | 0;
+
                 rosterStats[data.player_id[0]] = {
                     name: data.name[0].full[0],
                     stat: {
-                        FGM: Number(data.player_stats[0].stats[0].stat[0].value[0].split('/')[0]),
-                        FGA: Number(data.player_stats[0].stats[0].stat[0].value[0].split('/')[1]),
-                        FG: Number(data.player_stats[0].stats[0].stat[1].value[0]),
-                        FTM: Number(data.player_stats[0].stats[0].stat[2].value[0].split('/')[0]),
-                        FTA: Number(data.player_stats[0].stats[0].stat[2].value[0].split('/')[1]),
-                        FT: Number(data.player_stats[0].stats[0].stat[3].value[0]),
-                        ThreePTM: Number(data.player_stats[0].stats[0].stat[4].value[0]),
-                        PTS: Number(data.player_stats[0].stats[0].stat[5].value[0]),
-                        REB: Number(data.player_stats[0].stats[0].stat[6].value[0]),
-                        AST: Number(data.player_stats[0].stats[0].stat[7].value[0]),
-                        STL: Number(data.player_stats[0].stats[0].stat[8].value[0]),
-                        BLK: Number(data.player_stats[0].stats[0].stat[9].value[0]),
-                        TO: Number(data.player_stats[0].stats[0].stat[10].value[0]),
+                        FGM: Number(data.player_stats[0].stats[0].stat[0].value[0].split('/')[0]) / game_played,
+                        FGA: Number(data.player_stats[0].stats[0].stat[0].value[0].split('/')[1]) / game_played,
+                        FG: Number(data.player_stats[0].stats[0].stat[1].value[0]) / game_played,
+                        FTM: Number(data.player_stats[0].stats[0].stat[2].value[0].split('/')[0]) / game_played,
+                        FTA: Number(data.player_stats[0].stats[0].stat[2].value[0].split('/')[1]) / game_played,
+                        FT: Number(data.player_stats[0].stats[0].stat[3].value[0]) / game_played,
+                        ThreePTM: Number(data.player_stats[0].stats[0].stat[4].value[0]) / game_played,
+                        PTS: Number(data.player_stats[0].stats[0].stat[5].value[0]) / game_played,
+                        REB: Number(data.player_stats[0].stats[0].stat[6].value[0]) / game_played,
+                        AST: Number(data.player_stats[0].stats[0].stat[7].value[0]) / game_played,
+                        STL: Number(data.player_stats[0].stats[0].stat[8].value[0]) / game_played,
+                        BLK: Number(data.player_stats[0].stats[0].stat[9].value[0]) / game_played,
+                        TO: Number(data.player_stats[0].stats[0].stat[10].value[0]) / game_played,
                     }
                 }
             }
@@ -225,7 +229,7 @@ export class FantasyService {
             return {};
         }
     }
-
+    
     // Get a player stats for Player Service
     static getPlayerStats = async(access_token: string, league_prefix: string, league_id: string, player_id: string, type: string = "") => {
         try{

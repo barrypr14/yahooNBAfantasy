@@ -18,10 +18,10 @@ const MonitorComponent = ({ leagues }) => {
                         <>
                         <div className="row">
                             <div className="col-6 d-flex justify-content-center">
-                                <PowerRanking key={ league_id } power_ranking= { leagues[league_id].power_ranking }/>
+                                <PowerRanking key={ league_id } power_ranking= { leagues[league_id].power_ranking } league_id={league_id}/>
                             </div>
                             <div className="col-6 d-flex justify-content-center">
-                                <Scoreboard key={ league_id } scoreboard={ leagues[league_id].scoreboard } />
+                                <Scoreboard key={ league_id } scoreboard={ leagues[league_id].scoreboard } league_id={league_id} />
                             </div>
                         </div>
                         </>

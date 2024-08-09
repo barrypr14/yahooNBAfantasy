@@ -17,3 +17,5 @@ router.get("/api/team/roster", currentUser, async (req: Request, res: Response) 
 
     res.send(team.roster);
 })
+
+export { router as rosterRouter };

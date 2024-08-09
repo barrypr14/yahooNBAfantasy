@@ -20,7 +20,7 @@ const start = async () => {
     try{
         await connectRabbitMQ();
         // await publishLeageCreateEvent("league_create", {"access_token": "0000", "league_prefix": "428", "league_id": ["27006", "1976009"]});
-        console.log("League Service connected to RabbitMQ");
+        console.log("League Service connected to RabbitMQ!!");
     } catch(err){
         console.log(err);
     }
