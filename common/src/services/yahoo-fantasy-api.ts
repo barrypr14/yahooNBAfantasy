@@ -202,7 +202,7 @@ export class FantasyService {
             for(const data of playerStatData){
                 const player_url = `players;player_keys=${league_prefix}.p.${data.player_id[0]}/stats`
                 const playerResponse = await this.makeApiRequest(player_url, access_token);
-                const game_played = parseInt(playerResponse.fantasy_content.players[0].player[0].player_stats[0].stats[0].stat[0].value[0]) | 0 + parseInt(playerResponse.fantasy_content.players[0].player[0].player_stats[0].stats[0].stat[1].value[0]) | 0;
+                const game_played = (parseInt(playerResponse.fantasy_content.players[0].player[0].player_stats[0].stats[0].stat[0].value[0]) || 0) + (parseInt(playerResponse.fantasy_content.players[0].player[0].player_stats[0].stats[0].stat[1].value[0]) || 0);
 
                 
                 rosterStats[data.player_id[0]] = {
